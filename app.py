@@ -195,12 +195,16 @@ def _find_optimal_quality(doc, dpi, target_bytes, num_pages):
             mat = fitz.Matrix(dpi / 72, dpi / 72)
             pix = page.get_pixmap(matrix=mat)
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            del pix  # free pixmap immediately
 
             buf = io.BytesIO()
             img.save(buf, format='JPEG', quality=mid, optimize=True)
             page_size = buf.tell()
             estimated_total += page_size
             buf.close()
+            del img  # free image immediately
+
+        gc.collect()
 
         avg_page_size = estimated_total / sample_pages
         projected_total = avg_page_size * num_pages * 1.08
@@ -223,6 +227,7 @@ def _build_compressed_pdf(doc, output_path, dpi, quality):
         mat = fitz.Matrix(dpi / 72, dpi / 72)
         pix = page.get_pixmap(matrix=mat)
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+        del pix  # free pixmap immediately
 
         img_buf = io.BytesIO()
         img.save(img_buf, format='JPEG', quality=quality, optimize=True, subsampling=2)
@@ -232,13 +237,15 @@ def _build_compressed_pdf(doc, output_path, dpi, quality):
         new_page = result_doc.new_page(width=rect.width, height=rect.height)
         new_page.insert_image(rect, stream=img_buf.read())
         img_buf.close()
+        del img  # free image immediately
 
-        # Free memory periodically
-        if page_num % 10 == 0:
+        # Free memory every 3 pages
+        if page_num % 3 == 0:
             gc.collect()
 
     result_doc.save(output_path, garbage=4, deflate=True, deflate_images=True, deflate_fonts=True)
     result_doc.close()
+    gc.collect()
 
 
 def _optimize_with_pikepdf(input_path, output_path):

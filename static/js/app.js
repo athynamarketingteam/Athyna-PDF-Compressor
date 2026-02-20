@@ -195,6 +195,9 @@
         })
             .then(response => {
                 clearTimeout(timeoutId);
+                if (!response.ok) {
+                    throw new Error(`Server error (${response.status}). The file may be too large for the server's memory.`);
+                }
                 return response.json();
             })
             .then(data => {
