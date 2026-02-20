@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athyna PDF Compressor</title>
+    <meta name="description"
+        content="Compress PDF files to 5MB or 10MB while preserving maximum quality. Powered by Athyna.">
+    <link rel="stylesheet" href="/static/css/style.css?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo-group">
+                <img src="/static/img/logo.png" alt="Athyna" class="logo-img">
+                <div class="logo-divider"></div>
+                <span class="app-title">PDF Compressor</span>
+            </div>
+            <div class="header-badge">
+                <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span>Quality Preserved</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">Compress your PDFs<br><span class="hero-highlight">without losing
+                            quality</span></h1>
+                    <p class="hero-subtitle">Upload your PDF and choose your target size.<br>Our engine preserves
+                        maximum visual quality while hitting your file size target.</p>
+                </div>
+                <div class="hero-illustration">
+                    <img src="/static/img/hero_illustration.png" alt="Athyna Illustration"
+                        class="hero-illustration-img">
+                </div>
+            </section>
+
+            <!-- Upload Card -->
+            <div class="card upload-card" id="uploadCard">
+
+                <!-- Drop Zone -->
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-content" id="dropContent">
+                        <div class="drop-icon-wrapper">
+                            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <p class="drop-title">Drag & drop your PDF here</p>
+                        <p class="drop-subtitle">or click to browse files</p>
+                        <span class="drop-hint">PDF files up to 100 MB</span>
+                    </div>
+
+                    <!-- File Info (shows after upload) -->
+                    <div class="file-info" id="fileInfo" style="display:none;">
+                        <div class="file-icon-wrapper">
+                            <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <line x1="10" y1="9" x2="8" y2="9" />
+                            </svg>
+                        </div>
+                        <div class="file-details">
+                            <p class="file-name" id="fileName"></p>
+                            <p class="file-size" id="fileSize"></p>
+                        </div>
+                        <button class="btn-remove" id="removeFile" title="Remove file">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <input type="file" id="fileInput" accept=".pdf" hidden>
+                </div>
+
+                <!-- Target Size Selector -->
+                <div class="target-section" id="targetSection" style="display:none;">
+                    <label class="section-label">Target File Size</label>
+                    <div class="target-toggle">
+                        <button class="target-btn active" data-target="5" id="btn5mb">
+                            <span class="target-value">5</span>
+                            <span class="target-unit">MB</span>
+                        </button>
+                        <button class="target-btn" data-target="10" id="btn10mb">
+                            <span class="target-value">10</span>
+                            <span class="target-unit">MB</span>
+                        </button>
+                    </div>
+                    <p class="target-hint" id="targetHint">Maximum compression — best for email attachments</p>
+                </div>
+
+                <!-- Compress Button -->
+                <button class="btn-compress" id="compressBtn" style="display:none;">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 14 10 14 10 20" />
+                        <polyline points="20 10 14 10 14 4" />
+                        <line x1="14" y1="10" x2="21" y2="3" />
+                        <line x1="3" y1="21" x2="10" y2="14" />
+                    </svg>
+                    <span>Compress PDF</span>
+                </button>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="card progress-card" id="progressCard" style="display:none;">
+                <div class="progress-header">
+                    <svg class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="2" x2="12" y2="6" />
+                        <line x1="12" y1="18" x2="12" y2="22" />
+                        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
+                        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+                        <line x1="2" y1="12" x2="6" y2="12" />
+                        <line x1="18" y1="12" x2="22" y2="12" />
+                        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
+                        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+                    </svg>
+                    <div>
+                        <h3 class="progress-title">Compressing your PDF...</h3>
+                        <p class="progress-status" id="progressStatus">Analyzing document structure</p>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- Result Card -->
+            <div class="card result-card" id="resultCard" style="display:none;">
+                <div class="result-header">
+                    <div class="result-icon-wrapper">
+                        <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="result-title">Compression Complete!</h3>
+                        <p class="result-subtitle" id="resultFilename"></p>
+                    </div>
+                </div>
+
+                <!-- Partial Success Banner (hidden by default) -->
+                <div class="partial-banner" id="partialBanner" style="display:none;">
+                    <svg class="partial-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <p class="partial-banner-text" id="partialBannerText"></p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Original</span>
+                        <span class="stat-value" id="statOriginal">—</span>
+                    </div>
+                    <div class="stat-card stat-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </div>
+                    <div class="stat-card stat-highlight">
+                        <span class="stat-label">Compressed</span>
+                        <span class="stat-value" id="statCompressed">—</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Reduced by</span>
+                        <span class="stat-value stat-ratio" id="statRatio">—</span>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <button class="btn-download" id="downloadBtn">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span>Download Compressed PDF</span>
+                </button>
+
+                <!-- Compress Another -->
+                <button class="btn-another" id="anotherBtn">
+                    <svg class="btn-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="1 4 1 10 7 10" />
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                    </svg>
+                    <span>Compress Another File</span>
+                </button>
+            </div>
+
+            <!-- Error Card -->
+            <div class="card error-card" id="errorCard" style="display:none;">
+                <div class="error-header">
+                    <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                    </svg>
+                    <div>
+                        <h3 class="error-title">Something went wrong</h3>
+                        <p class="error-message" id="errorMessage"></p>
+                    </div>
+                </div>
+                <button class="btn-another" id="retryBtn">
+                    <svg class="btn-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="1 4 1 10 7 10" />
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                    </svg>
+                    <span>Try Again</span>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Powered by <strong>Athyna</strong> — Quality compression engine</p>
+    </footer>
+
+    <script src="/static/js/app.js?v=2"></script>
+</body>
+
+</html>
