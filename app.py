@@ -11,6 +11,7 @@ import gc
 from pathlib import Path
 
 from flask import Flask, render_template, request, jsonify, send_file
+from werkzeug.middleware.proxy_fix import ProxyFix
 import fitz  # PyMuPDF
 from PIL import Image
 import pikepdf
@@ -32,6 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max upload
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # No caching for static files
 
@@ -272,7 +274,7 @@ def _optimize_with_pikepdf(input_path, output_path):
 @app.route('/compress', methods=['POST'])
 def compress():
     """Handle PDF compression request."""
-    logger.info('=== /compress request received ===')
+    logger.info(f'=== /compress request received === Method: {request.method}, URL: {request.url}')
 
     try:
         if 'file' not in request.files:
