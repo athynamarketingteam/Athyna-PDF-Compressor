@@ -76,6 +76,12 @@ def health():
     return jsonify({'status': 'ok', 'temp_dir': UPLOAD_DIR})
 
 
+@app.route('/favicon.ico')
+def favicon():
+    """Prevent 404 for favicon requests."""
+    return '', 204
+
+
 # ============================================================
 # Compression Engine
 # ============================================================

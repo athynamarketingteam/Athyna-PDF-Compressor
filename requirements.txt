@@ -3,3 +3,4 @@ pymupdf
 pikepdf
 pillow
 waitress
+gunicorn
