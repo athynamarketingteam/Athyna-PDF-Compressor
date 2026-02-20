@@ -227,33 +227,63 @@ def _find_optimal_quality(doc, dpi, target_bytes, num_pages):
 
 
 def _build_compressed_pdf(doc, output_path, dpi, quality):
-    """Build a new PDF with compressed page images."""
-    result_doc = fitz.open()
+    """Build a new PDF with compressed page images — memory-efficient batched approach."""
+    num_pages = len(doc)
+    batch_size = 5  # Process 5 pages at a time to limit peak RAM
+    batch_files = []
 
-    for page_num in range(len(doc)):
-        page = doc[page_num]
-        mat = fitz.Matrix(dpi / 72, dpi / 72)
-        pix = page.get_pixmap(matrix=mat)
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        del pix  # free pixmap immediately
+    try:
+        for batch_start in range(0, num_pages, batch_size):
+            batch_end = min(batch_start + batch_size, num_pages)
+            batch_doc = fitz.open()
 
-        img_buf = io.BytesIO()
-        img.save(img_buf, format='JPEG', quality=quality, optimize=True, subsampling=2)
-        img_buf.seek(0)
+            for page_num in range(batch_start, batch_end):
+                page = doc[page_num]
+                mat = fitz.Matrix(dpi / 72, dpi / 72)
+                pix = page.get_pixmap(matrix=mat)
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                del pix  # free pixmap immediately
 
-        rect = page.rect
-        new_page = result_doc.new_page(width=rect.width, height=rect.height)
-        new_page.insert_image(rect, stream=img_buf.read())
-        img_buf.close()
-        del img  # free image immediately
+                img_buf = io.BytesIO()
+                img.save(img_buf, format='JPEG', quality=quality, optimize=True, subsampling=2)
+                img_buf.seek(0)
 
-        # Free memory every 3 pages
-        if page_num % 3 == 0:
+                rect = page.rect
+                new_page = batch_doc.new_page(width=rect.width, height=rect.height)
+                new_page.insert_image(rect, stream=img_buf.read())
+                img_buf.close()
+                del img  # free image immediately
+
+            # Save batch to disk and free memory
+            batch_path = output_path + f'.batch{batch_start}.pdf'
+            batch_doc.save(batch_path, garbage=4, deflate=True)
+            batch_doc.close()
+            batch_files.append(batch_path)
+            gc.collect()
+            logger.info(f'  Batch {batch_start}-{batch_end-1} saved to disk')
+
+        # Merge all batches using pikepdf (memory efficient)
+        if len(batch_files) == 1:
+            shutil.move(batch_files[0], output_path)
+        else:
+            merger = pikepdf.Pdf.new()
+            for bf in batch_files:
+                src = pikepdf.open(bf)
+                merger.pages.extend(src.pages)
+                src.close()
+                gc.collect()
+            merger.save(output_path, linearize=True)
+            merger.close()
             gc.collect()
 
-    result_doc.save(output_path, garbage=4, deflate=True, deflate_images=True, deflate_fonts=True)
-    result_doc.close()
-    gc.collect()
+    finally:
+        # Clean up batch files
+        for bf in batch_files:
+            try:
+                if os.path.exists(bf):
+                    os.remove(bf)
+            except Exception:
+                pass
 
 
 def _optimize_with_pikepdf(input_path, output_path):
