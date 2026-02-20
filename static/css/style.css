@@ -4,7 +4,7 @@
    ============================================ */
 
 /* — Font Import — */
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Prata&display=swap');
 
 /* — CSS Custom Properties (Athyna Brand) — */
 :root {
@@ -208,8 +208,8 @@ body::before {
 }
 
 .hero-title {
-    font-size: 2.25rem;
-    font-weight: var(--font-weight-bold);
+    font-size: 2.75rem;
+    font-weight: var(--font-weight-regular);
     line-height: 1.2;
     margin-bottom: var(--space-base);
     color: var(--text-primary);
@@ -217,6 +217,7 @@ body::before {
 }
 
 .hero-highlight {
+    font-family: 'Prata', serif;
     background: linear-gradient(135deg, var(--color-purple), var(--color-mint));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -224,7 +225,7 @@ body::before {
 }
 
 .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.15rem;
     font-weight: var(--font-weight-light);
     color: var(--text-secondary);
     max-width: 420px;
